@@ -7,7 +7,7 @@ const app = express();
 
 app.use(morgan('common', { immediate: true}));
 
-app.use(express.urlencoded({extended:false }));
+app.use(express.json());
 
 app.use('/movie', movieRouter);
 

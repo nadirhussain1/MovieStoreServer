@@ -70,17 +70,46 @@ export async function detailAction(request, response) {
   }
 }
 
-export async function removeAction(request, response) {
-  const id = parseInt(request.params.id, 10);
-  await remove(id, request.user.id);
+export async function createAction(request, response) {
+  try {
+    const movie = {
+      title: request.body.title,
+      year: request.body.year,
+      public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
+    }
+
+    const newMovie = await save(movie, 1);
+    response.status(201).json(newMovie);
+
+  } catch (e) {
+    response.status(500).send("Server side error");
+  }
 }
 
-export async function formAction(request, response) {
-  let movie = { id: '', title: '', year: '', public: '' };
-  if (request.params.id) {
-    movie = await get(parseInt(request.params.id, 10), request.user.id);
-  }
+export async function updateAction(request, response) {
+  try {
+    const movie = {
+      id: request.params.id,
+      title: request.body.title,
+      year: request.body.year,
+      public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
+    };
+    const updatedMovie = await model.save(movie, 1); response.json(movie);
+    response.json(movie);
 
+  } catch (e) {
+    response.status(500).json(error);
+  }
+}
+
+export async function deleteAction(request, response) {
+  try {
+    const id = parseInt(request.params.id, 10);
+    await remove(id, 1);
+    response.status(204).send();
+  } catch (e) {
+    console.error(e); response.status(500).send('An error happened');
+  }
 }
 
 export async function saveAction(request, response) {
@@ -101,6 +130,6 @@ export async function rateAction(request, response) {
     rating: parseInt(request.params.rating, 10),
   };
   await rate(rating);
-
 }
+
 
