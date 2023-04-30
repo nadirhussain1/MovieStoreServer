@@ -16,19 +16,6 @@ export async function getAll(userId) {
     });
 }
 
-export async function remove(id,userId) {
-    return new Promise((resolve, reject) => {
-        const query = 'DELETE FROM Movies WHERE id = ? AND (user = ? OR public = 1)'; 
-        db.run(query, [id,userId], (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-    });
-}
-
 export  async function get(id,userId) {
     return new Promise((resolve, reject) => {
         const query = 'SELECT * FROM Movies WHERE id = ? AND (user = ? OR public = 1)';
@@ -42,7 +29,36 @@ export  async function get(id,userId) {
     });
 }
 
+export async function save(movie,userId) {
+    if (!movie.id) {
+        insert(movie,userId);
+    } else {
+        update(movie,userId);
+    }
+}
 
+export async function remove(id,userId) {
+    return new Promise((resolve, reject) => {
+        const query = 'DELETE FROM Movies WHERE id = ? AND (user = ? OR public = 1)'; 
+        db.run(query, [id,userId], (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+
+export async function rate(rating) {
+    const deleteQuery = 'DELETE FROM Ratings WHERE movie = ? AND user = ?';
+    await db.run(deleteQuery, [rating.movie, rating.user]);
+    const insertQuery =
+    'INSERT INTO Ratings (movie, user, rating) VALUES (?, ?, ?)';
+    return db.run(insertQuery, [rating.movie, rating.user, rating.rating]);
+}
+    
 
 function insert(movie,userId) {
     return new Promise((resolve, reject) => {
@@ -70,20 +86,6 @@ function update(movie,userId) {
     });
 }
 
-export async function save(movie,userId) {
-    if (!movie.id) {
-        insert(movie,userId);
-    } else {
-        update(movie,userId);
-    }
-}
 
-export async function rate(rating) {
-    const deleteQuery = 'DELETE FROM Ratings WHERE movie = ? AND user = ?';
-    await db.run(deleteQuery, [rating.movie, rating.user]);
-    const insertQuery =
-    'INSERT INTO Ratings (movie, user, rating) VALUES (?, ?, ?)';
-    return db.run(insertQuery, [rating.movie, rating.user, rating.rating]);
-}
-    
+
 

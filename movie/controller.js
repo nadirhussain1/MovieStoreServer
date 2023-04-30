@@ -10,6 +10,16 @@ export async function listAction(request, response) {
   response.json(moviesResponse);
 }
 
+
+export async function detailAction(request, response) {
+  const movie = await get(request.params.id,1);
+  const moviesResponse = {
+    movie,
+    links: [{ rel: 'self', href: `${request.baseUrl}/${movie.id}` }], };
+
+  response.json(moviesResponse);
+}
+
 export async function removeAction(request, response) {
   const id = parseInt(request.params.id, 10);
   await remove(id, request.user.id);
