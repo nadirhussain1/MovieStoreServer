@@ -24,7 +24,7 @@ function getLinks(current, base) {
 export async function listAction(request, response) {
   try {
     const options = {
-      userId: 1,
+      userId: request.user.id,
       sort: request.query.sort ? request.query.sort : '',
     };
 
@@ -54,7 +54,7 @@ export async function listAction(request, response) {
 
 export async function detailAction(request, response) {
   try {
-    const movie = await get(request.params.id, 1);
+    const movie = await get(request.params.id, request.user.id);
     if (!movie) {
       response.status(404).send("Not Found");
       return;
@@ -78,7 +78,7 @@ export async function createAction(request, response) {
       public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
     }
 
-    const newMovie = await save(movie, 1);
+    const newMovie = await save(movie, request.user.id);
     response.status(201).json(newMovie);
 
   } catch (e) {
@@ -94,7 +94,7 @@ export async function updateAction(request, response) {
       year: request.body.year,
       public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
     };
-    const updatedMovie = await model.save(movie, 1); response.json(movie);
+    const updatedMovie = await model.save(movie, request.user.id); response.json(movie);
     response.json(movie);
 
   } catch (e) {
@@ -105,7 +105,7 @@ export async function updateAction(request, response) {
 export async function deleteAction(request, response) {
   try {
     const id = parseInt(request.params.id, 10);
-    await remove(id, 1);
+    await remove(id, request.user.id);
     response.status(204).send();
   } catch (e) {
     console.error(e); response.status(500).send('An error happened');
