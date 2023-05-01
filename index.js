@@ -12,6 +12,8 @@ app.use(express.json());
 
 app.use('/login', loginRouter);
 
+console.log("ServerDebug after login route=");
+
 app.use( '/movie', expressJwt({ secret: 'secret', algorithms: ['HS256'] }), movieRouter,);
 
 app.use((err, request, response, next) => {

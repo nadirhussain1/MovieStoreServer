@@ -1,5 +1,6 @@
 import { getAll, remove, get, save, rate } from './model.js';
 import jsonXml from 'jsontoxml';
+import { validationResult } from 'express-validator';
 
 
 function getLinks(current, base) {
@@ -24,7 +25,7 @@ function getLinks(current, base) {
 export async function listAction(request, response) {
   try {
     const options = {
-      userId: request.user.id,
+      userId: 1,
       sort: request.query.sort ? request.query.sort : '',
     };
 
@@ -72,17 +73,24 @@ export async function detailAction(request, response) {
 
 export async function createAction(request, response) {
   try {
+    console.log("RequestDebug request=",request.body);
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+
     const movie = {
       title: request.body.title,
       year: request.body.year,
       public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
     }
 
-    const newMovie = await save(movie, request.user.id);
+    const newMovie = await save(movie, 1);
     response.status(201).json(newMovie);
 
   } catch (e) {
-    response.status(500).send("Server side error");
+    console.log("ErrorDebug e=",e);
+    response.status(500).send("Server side error=");
   }
 }
 
@@ -94,7 +102,7 @@ export async function updateAction(request, response) {
       year: request.body.year,
       public: parseInt(request.body.public, 10) === 1 ? 1 : 0,
     };
-    const updatedMovie = await model.save(movie, request.user.id); response.json(movie);
+    const updatedMovie = await model.save(movie, 1); response.json(movie);
     response.json(movie);
 
   } catch (e) {
@@ -104,8 +112,13 @@ export async function updateAction(request, response) {
 
 export async function deleteAction(request, response) {
   try {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+
     const id = parseInt(request.params.id, 10);
-    await remove(id, request.user.id);
+    await remove(id, 1);
     response.status(204).send();
   } catch (e) {
     console.error(e); response.status(500).send('An error happened');
@@ -120,7 +133,7 @@ export async function saveAction(request, response) {
     public: request.body.public === '1' ? 1 : 0,
   };
 
-  await save(movie), request.user.id;
+  await save(movie);
 }
 
 export async function rateAction(request, response) {
