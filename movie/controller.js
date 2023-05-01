@@ -73,7 +73,6 @@ export async function detailAction(request, response) {
 
 export async function createAction(request, response) {
   try {
-    console.log("RequestDebug request=",request.body);
     const errors = validationResult(request);
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
