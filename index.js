@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import { router as movieRouter } from './movie/index.js';
 import { router as loginRouter } from './auth.js';
 import { expressjwt as expressJwt } from 'express-jwt';
+import graphql from './graphql.js';
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use((err, request, response, next) => {
 });
 
 app.get('/', (request, response) => response.redirect('/movie'));
+
+app.use('/graphql', graphql);
 
 app.listen(8080, () => {
     console.log('Server is listening at http://localhost:8080');
