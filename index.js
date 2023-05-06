@@ -27,7 +27,8 @@ app.use((err, request, response, next) => {
 
 app.get('/', (request, response) => response.redirect('/movie'));
 
-app.use('/graphql', graphql);
+app.use( '/graphql', expressJwt({ secret: 'secret', algorithms: ['HS256'] }), graphql);
+
 
 app.listen(8080, () => {
     console.log('Server is listening at http://localhost:8080');
